@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Private Notes</title>
+    <style>
+        /* STYLE UNTUK BACKGROUND VIDEO */
+        #bgVideo {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            object-fit: cover;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: white;
+        }
+
+        /* STYLE BOX LOGIN & REGISTER */
+        .box {
+            background: rgba(30, 30, 50, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba20, 55, 55, 1.5);
+            width: 300px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h2 {
+            color: #f1f1f1;
+            margin-bottom: 25px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            box-sizing: border-box;
+        }
+        input::placeholder { color: #aaa; }
+        .show-password {
+            text-align: left;
+            margin: 5px 0 15px 0;
+            font-size: 14px;
+            color: #ccc;
+        }
+        button {
+            width: 100%;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .error {
+            color: #ff6b6b;
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+        }
+        .link-text {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        .link-text a {
+            color: #00f5d4;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* ========================================== */
+        /* STYLE HALAMAN CATATAN / NOTES */
+        /* ========================================== */
+        .notes-container {
+            background: #1a1a2e;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+            border: 1px solid #333;
+            width: 400px;
+            display: none;
+        }
+        .notes-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #e0e0e0;
+            text-align: center;
+        }
+        .user-info {
+            text-align: center;
+            color: #00f5d4;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        textarea {
+            width: 100%;
+            height: 250px;
+            background: #16213e;
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: #fff;
+            padding: 15px;
+            font-size: 16px;
+            box-sizing: border-box;
+            resize: none;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn-save {
+            background: linear-gradient(45deg, #00c9ff, #00a8ff);
+            flex: 1;
+        }
+        .btn-clear {
+            background: linear-gradient(45deg, #ff9800, #ff5722);
+            flex: 1;
+        }
+        .btn-keluar {
+            margin-top: 10px;
+            background: linear-gradient(45deg, #414141, #2b2b2b);
+        }
+        .status-save {
+            text-align: center;
+            margin-top: 10px;
+            color: #00f5d4;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BACKGROUND VIDEO -->
+    <video autoplay muted loop id="bgVideo">
+        <source src="vidio1.mp4" type="">
+    </video>
+
+    <!-- ========================================== -->
+    <!-- BAGIAN FORM LOGIN -->
+    <!-- ========================================== -->
+    <div id="loginBox" class="box">
+        <h2>Login To Akses</h2>
+        <input type="text" id="username" placeholder="masukan username">
+        <input type="password" id="password" placeholder="masukan pasword">
+        
+        <div class="show-password">
+            <input type="checkbox" id="toggle">
+            <label for="toggle">Lihat Password</label>
+        </div>
+
+        <button onclick="cekLogin()">Masuk</button>
+        <div id="pesanError" class="error"></div>
+
+        <div class="link-text">
+            Belum punya akun? <a href="javascript:void(0)" onclick="showRegister()">Buat Akun Baru</a>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- BAGIAN FORM DAFTAR / REGISTER -->
+    <!-- ========================================== -->
+    <div id="registerBox" class="box" style="display: none;">
+        <h2>Buat Akun Baru</h2>
+        <input type="text" id="newUsername" placeholder="Buat username baru">
+        <input type="password" id="newPassword" placeholder="Buat password (min. 6)">
+        
+        <div class="show-password">
+            <input type="checkbox" id="toggleReg">
+            <label for="toggleReg">Lihat Password</label>
+        </div>
+
+        <button onclick="simpanAkun()">Daftar Sekarang</button>
+        <div id="pesanReg" class="error"></div>
+
+        <div class="link-text">
+            Sudah punya akun? <a href="javascript:void(0)" onclick="showLogin()">Kembali ke Login</a>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- BAGIAN HOME / CATATAN PRIBADI -->
+    <!-- ========================================== -->
+    <div id="homeBox" class="notes-container">
+        <h1 class="notes-title">📝 CATATAN PRIBADI</h1>
+        <div class="user-info">Selamat Datang, <span id="currentUser">User</span></div>
+        
+        <textarea id="textArea" placeholder="Tulis catatan, data penting, atau kata-kata kamu di sini..."></textarea>
+        
+        <div class="btn-group">
+            <button class="btn-save" onclick="simpanCatatan()">💾 Simpan</button>
+            <button class="btn-clear" onclick="hapusTulisan()">🗑️ Hapus</button>
+        </div>
+        
+        <div class="status-save" id="statusSave">✅ Tersimpan Permanen!</div>
+        <button class="btn-keluar" onclick="location.reload()">Keluar</button>
+    </div>
+
+<script>
+    // ==========================================
+    // LOAD DATA DARI LOCALSTORAGE (AGAR TIDAK HILANG)
+    // ==========================================
+    
+    // Ambil data akun, kalau belum ada buat yang baru
+    let daftarAkun = JSON.parse(localStorage.getItem("daftarAkun")) || [
+        { user: "admin", pass: "123456" },
+        { user: "Yobsz", pass: "Yobsz01"},
+    ];
+
+    // Ambil data catatan, kalau belum ada buat yang baru
+    let dataCatatan = JSON.parse(localStorage.getItem("dataCatatan")) || {
+        "admin": "Halo Admin! Ini catatan khusus kamu.",
+        "budi": "Catatan milik Budi...",
+        "siti": "Catatan rahasia Siti.",
+        "user1": "Halo user1, selamat datang!"
+    };
+
+    let userSekarang = "";
+
+    // --- FUNGSI PINDAH FORM ---
+    function showRegister() {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("registerBox").style.display = "block";
+        document.getElementById("pesanReg").style.display = "none";
+        document.getElementById("newUsername").value = "";
+        document.getElementById("newPassword").value = "";
+    }
+
+    function showLogin() {
+        document.getElementById("registerBox").style.display = "none";
+        document.getElementById("loginBox").style.display = "block";
+        document.getElementById("pesanError").style.display = "none";
+    }
+
+    // --- SHOW/HIDE PASSWORD ---
+    const passwordField = document.getElementById("password");
+    const toggleCheckbox = document.getElementById("toggle");
+    toggleCheckbox.addEventListener("change", function() {
+        passwordField.type = this.checked ? "text" : "password";
+    });
+
+    const passwordReg = document.getElementById("newPassword");
+    const toggleReg = document.getElementById("toggleReg");
+    toggleReg.addEventListener("change", function() {
+        passwordReg.type = this.checked ? "text" : "password";
+    });
+
+    // --- FUNGSI SIMPAN AKUN BARU ---
+    function simpanAkun() {
+        const userBaru = document.getElementById("newUsername").value.trim();
+        const passBaru = document.getElementById("newPassword").value.trim();
+        const pesan = document.getElementById("pesanReg");
+
+        if (userBaru === "" || passBaru === "") {
+            pesan.innerHTML = "⚠️ Isi semua kolom!";
+            pesan.style.color = "#ff6b6b";
+            pesan.style.display = "block";
+            return;
+        }
+        if (passBaru.length < 6) {
+            pesan.innerHTML = "⚠️ Password minimal 6 huruf!";
+            pesan.style.color = "#ff6b6b";
+            pesan.style.display = "block";
+            return;
+        }
+
+        let cekAda = false;
+        for(let i=0; i<daftarAkun.length; i++){
+            if(daftarAkun[i].user === userBaru){
+                cekAda = true;
+                break;
+            }
+        }
+        if (cekAda) {
+            pesan.innerHTML = "⚠️ Username sudah dipakai!";
+            pesan.style.color = "#ff6b6b";
+            pesan.style.display = "block";
+            return;
+        }
+
+        // Simpan akun dan buatkan tempat catatan kosong
+        daftarAkun.push({ user: userBaru, pass: passBaru });
+        dataCatatan[userBaru] = "";
+        
+        // SIMPAN KE LOCALSTORAGE
+        localStorage.setItem("daftarAkun", JSON.stringify(daftarAkun));
+        localStorage.setItem("dataCatatan", JSON.stringify(dataCatatan));
+        
+        pesan.style.color = "#00f5d4";
+        pesan.innerHTML = "✅ Akun Berhasil Dibuat!";
+        pesan.style.display = "block";
+
+        setTimeout(showLogin, 1500);
+    }
+
+    // --- FUNGSI CEK LOGIN ---
+    function cekLogin() {
+        var user = document.getElementById("username").value.trim();
+        var pass = document.getElementById("password").value.trim();
+        var error = document.getElementById("pesanError");
+
+        if (user === "" && pass === "") {
+            error.innerHTML = "Mohon login terlebih dahulu";
+            error.style.display = "block";
+            return;
+        }
+        else if (user === "") {
+            error.innerHTML = "Silakan mengisi username";
+            error.style.display = "block";
+            return;
+        }
+        else if (pass === "" || pass.length < 6) {
+            error.innerHTML = "Isi password minimal 6 huruf";
+            error.style.display = "block";
+            return;
+        }
+
+        var akunDitemukan = false;
+        for (var i = 0; i < daftarAkun.length; i++) {
+            if (daftarAkun[i].user === user && daftarAkun[i].pass === pass) {
+                akunDitemukan = true;
+                break;
+            }
+        }
+
+        if (akunDitemukan) {
+            userSekarang = user;
+            document.getElementById("currentUser").innerHTML = user;
+            
+            // Ambil catatan milik user ini dari penyimpanan
+            document.getElementById("textArea").value = dataCatatan[user] || "";
+
+            document.getElementById("loginBox").style.display = "none";
+            document.getElementById("homeBox").style.display = "block";
+        } else {
+            error.innerHTML = "Format login salah";
+            error.style.display = "block";
+        }
+    }
+
+    // ==========================================
+    // FUNGSI HALAMAN CATATAN
+    // ==========================================
+    
+    // Simpan tulisan ke LocalStorage
+    function simpanCatatan() {
+        if(userSekarang == "") return;
+        dataCatatan[userSekarang] = document.getElementById("textArea").value;
+        
+        // Simpan permanen
+        localStorage.setItem("dataCatatan", JSON.stringify(dataCatatan));
+        
+        // Tampilkan notifikasi
+        const status = document.getElementById("statusSave");
+        status.style.display = "block";
+        setTimeout(() => { status.style.display = "none"; }, 1500);
+    }
+
+    // Hapus tulisan di layar
+    function hapusTulisan() {
+        document.getElementById("textArea").value = "";
+    }
+
+</script>
+
+</body>
+</html>
